@@ -1,0 +1,42 @@
+#ifndef __FFT_H
+#define	__FFT_H
+
+#include "hal_data.h"
+
+typedef struct
+{
+	int32_t Re;
+	int32_t Im;	
+} COMPLEX_Type;
+
+void FFT_Init(void);
+void bit_reversed(void);
+void FFT(void);
+void Quantization_of_FFT_results(void);
+
+/*******ÆµÆ×ÏÔÊ¾********/
+typedef enum
+{
+	Black,		 	//ºÚ
+	Red,		 		//ºì R 001
+	Green,		 	//ÂÌ G 010
+	Yellow,		 	//»Æ
+	Blue,		 		//À¶ B 100
+	Purple,		 	//×Ï
+	Cyan,		 		//Çà
+	White		 		//°×
+} Colour_Type;	   //ÑÕÉ«ÖÖÀàÃ¶¾Ù
+
+typedef struct
+{
+	uint32_t RDbuf[64];
+	uint32_t GDbuf[64];
+	uint32_t BDbuf[64];
+} DISBUF_Type;
+
+void Display_refresh(void);
+void Spectrum_color_switching(void);
+/***********************/
+
+#endif /* __FFT_H */
+
