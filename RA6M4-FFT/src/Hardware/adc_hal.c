@@ -2,6 +2,8 @@
 #include "adc_hal.h"
 #include "dtc_hal.h"
 
+#include <rtthread.h>
+
 /*user buffer */
 //ADC0  -  A、B两组  -  每组两个通道  -   每个通道Ping Pong双缓存  -  每个缓存大小
 uint16_t g_buffer_adc[NUM_SAMPLES_PER_CHANNEL];
@@ -117,7 +119,8 @@ fsp_err_t adc_read_data(adc_ctrl_t * p_ctrl_adc, uint16_t *buffer)
     return err;
 }
 
-extern uint16_t DMAF;
+extern rt_mq_t OLED_mq;
+extern uint16_t Flag;
 /*******************************************************************************************************************//**
  *  @brief        User defined callback function for ADC unit 0
  *  @param[IN]    p_args
@@ -138,7 +141,7 @@ void g_adc0_callback(adc_callback_args_t *p_args)
             i++;
             if(i >= 128)    //获取128次AD采集后，置位TFT运算和OLED刷新标志
             {
-                DMAF = 1;
+                Flag = 1;
                 i = 0;
             }
         }

@@ -35,13 +35,44 @@ void GPIO_Init_OLED(void);
 static void general_signal_acquisition_init (void);
 static void handle_error(fsp_err_t err, char *err_str, module_name_t module);
 
-uint16_t DMAF = 0;
+uint16_t Flag = 0;
 
 /*extern variables */
 extern uint16_t g_buffer_adc[];
 extern volatile bool g_adc0_group_a_flag;
 extern volatile bool g_err_flag_adc0;
 //extern transfer_info_t g_transfer_adc_group_a[];
+
+static rt_thread_t  OLED_Thread;
+
+void OLED_Task(void *parameter)    //2ms执行一次
+{
+    while (1)
+    {
+        //动画显示
+        /*
+        Clear_Screen();
+        GRAM_ShowImage(0,0,127,127,gImage_xingkong);
+        Motion_Mind();
+        Refrash_Screen();
+        */
+        //频谱显示
+        if(Flag == 1)  //如果128点时域实数样本传输完成
+        {
+            Flag = 0;
+            bit_reversed();                      //128点时域实数样本转复数并倒位序存储
+            FFT();                               //FFT运算
+            Quantization_of_FFT_results();       //求FFT结果的幅值谱及其幅值谱的量化
+
+            Clear_Screen();
+            GRAM_ShowImage(0,0,127,127,gImage_xingkong);
+            Motion_Mind();
+            Display_refresh();
+            Refrash_Screen();
+        }
+        rt_thread_mdelay(2);
+    }
+}
 
 void hal_entry(void)
 {
@@ -77,30 +108,8 @@ void hal_entry(void)
     Device_Init();
     Motion_MindInit();
 
-    while (1)
-    {
-        //动画显示
-        /*
-        Clear_Screen();
-        GRAM_ShowImage(0,0,127,127,gImage_xingkong);
-        Motion_Mind();
-        Refrash_Screen();
-        */
-        //频谱显示
-        if(DMAF == 1)                         //如果128点时域实数样本DMA传输完成标志位DMAF为TRUE
-        {
-            DMAF = 0;
-            bit_reversed();                      //128点时域实数样本转复数并倒位序存储
-            FFT();                               //FFT运算
-            Quantization_of_FFT_results();       //求FFT结果的幅值谱及其幅值谱的量化
-
-            Clear_Screen();
-            GRAM_ShowImage(0,0,127,127,gImage_xingkong);
-            Motion_Mind();
-            Display_refresh();
-            Refrash_Screen();
-        }
-    }
+    OLED_Thread = rt_thread_create("Loop2MS",OLED_Task,RT_NULL,1024,2,1);
+    if(OLED_Thread != RT_NULL) rt_thread_startup(OLED_Thread);
 }
 
 /*******************************************************************************************************************//**
