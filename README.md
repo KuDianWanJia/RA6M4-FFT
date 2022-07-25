@@ -13,10 +13,10 @@
 
 ## 整体框架
 ### 硬件框架
-![硬件框图.png](./硬件框图.png)
+![Hardware.png](./Hardware.png)
 
 ### 软件框架
-![软件框图.png](./软件框图.png)
+![Software.png](./Software.png)
 
 ## RT-Thread的使用
 本次项目中使用了RTT操作系统，对RA6M4开发板绝大多数常用接口如UART、GPIO、ADC、IIC等进行了适配，但也有一部分还没适配，待后期更新，所以软件的开发以RTT API结合瑞萨官方BSP API进行，实现硬件定时器触发ADC采集，RTT线程定时进行FFT运算，获取频谱，并通过OLED显示频谱数据。
@@ -24,9 +24,9 @@ RTT有一个对板级适配的HAL层，对多种型号的MCU进行了BSP适配�
 
 ## 实物照片
 
-![1.jpg](./图片1.jpg)
+![Picture1.jpg](./Picture1.jpg)
 
-![2.jpg](./图片2.jpg)
+![Picture2.jpg](./Picture2.jpg)
 
 ## 仓库地址
 https://github.com/KuDianWanJia/RA6M4-TFT
